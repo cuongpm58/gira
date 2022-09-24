@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public interface GennericService <T extends BaseEntity, D, ID>{
     JpaRepository<T, ID> getRepository(); // Factory m
@@ -23,6 +22,10 @@ public interface GennericService <T extends BaseEntity, D, ID>{
 
     default List<D> findAllDto (Class<D> clazz) {
         return getRepository().findAll().stream().map(model -> getMapper().map(model, clazz)).toList();
+    }
+
+    default List<D> findAllDto (Pageable page, Class<D> clazz) {
+        return getRepository().findAll(page).stream().map(model -> getMapper().map(model, clazz)).toList();
     }
 
     default Optional<T> findById(ID id) {
