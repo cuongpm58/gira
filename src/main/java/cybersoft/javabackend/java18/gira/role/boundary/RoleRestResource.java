@@ -2,12 +2,13 @@ package cybersoft.javabackend.java18.gira.role.boundary;
 
 import cybersoft.javabackend.java18.gira.common.util.ResponseUtil;
 import cybersoft.javabackend.java18.gira.role.dto.RoleDTO;
-import cybersoft.javabackend.java18.gira.role.model.Role;
 import cybersoft.javabackend.java18.gira.role.service.RoleService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/role")
@@ -32,7 +33,7 @@ public class RoleRestResource {
     }
 
     @PostMapping
-    public Object save(@RequestBody Role role) {
-        return new ResponseEntity<>(service.save(role), HttpStatus.OK);
+    public Object save(@RequestBody @Valid RoleDTO roleDTO) {
+        return new ResponseEntity<>(service.save(roleDTO), HttpStatus.CREATED);
     }
 }

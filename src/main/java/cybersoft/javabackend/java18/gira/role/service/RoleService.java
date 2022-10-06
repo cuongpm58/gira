@@ -6,7 +6,6 @@ import cybersoft.javabackend.java18.gira.role.dto.RoleDTO;
 import cybersoft.javabackend.java18.gira.role.model.Role;
 import cybersoft.javabackend.java18.gira.role.repository.RoleRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +14,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface RoleService extends GennericService<Role, RoleDTO, UUID> {
+    RoleDTO save(RoleDTO roleDTO);
+
     Role update(Role role, String code);
     void delete(String code);
 
@@ -46,8 +47,10 @@ public interface RoleService extends GennericService<Role, RoleDTO, UUID> {
         }
 
         @Override
-        public Role save(Role role) {
-            return repository.save(role);
+        public RoleDTO save(RoleDTO roleDTO) {
+            Role model = getMapper().map(roleDTO, Role.class);
+            Role savedModel = repository.save(model);
+            return getMapper().map(savedModel, RoleDTO.class);
         }
 
         @Override
