@@ -7,39 +7,33 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @SuperBuilder
 @Entity
-@Table(name = RoleEntity.Role.TABLE_NAME)
-public class Role extends BaseEntity {
-    @Column(name = RoleEntity.Role.NAME, unique = true)
+@Table(name = RoleEntity.Service.TABLE_NAME)
+public class Service extends BaseEntity {
+    @Column(name = RoleEntity.Service.NAME, unique = true)
 //    @Size(min = 1, max = 100, message = "role name must have length between {min} and {max}")
     @Length(min = 5, max = 100, message = "role name must have length between {min} and {max}")
     private String name;
-    @Column(name = RoleEntity.Role.CODE)
+    @Column(name = RoleEntity.Service.CODE)
     @Length(min = 3, max = 10, message = "role name must have length between {min} and {max}")
     private String code;
-    @Column(name = RoleEntity.Role.DESCRIPTION)
+    @Column(name = RoleEntity.Service.DESCRIPTION)
     @NotBlank
     private String desciption;
-    @ManyToMany
-    private Set<Service> services = new LinkedHashSet<>();
+    @Column(name = RoleEntity.Service.TYPE, nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Type type;
 
-    @Override
-    public boolean equals(Object obj) {
-        Role role = (Role)obj;
-        return super.equals(obj)
-                && this.name.equals(role)
-                && this.code.equals(role);
+    public enum Type {
+        SAVE_OR_UPDATE,
+        FETCH,
+        REMOVE,
     }
 }
