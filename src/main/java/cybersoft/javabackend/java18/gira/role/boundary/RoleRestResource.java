@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/role")
@@ -35,5 +37,12 @@ public class RoleRestResource {
     @PostMapping
     public Object save(@RequestBody @Valid RoleDTO roleDTO) {
         return new ResponseEntity<>(service.save(roleDTO), HttpStatus.CREATED);
+    }
+
+    @PostMapping("{role-id}/add-operation")
+    public ResponseEntity<?> addOperation(
+            @RequestBody List<UUID> ids,
+            @PathVariable("role-id") UUID roleId) {
+        return ResponseUtil.get(service.addOperation(roleId, ids), HttpStatus.OK);
     }
 }
