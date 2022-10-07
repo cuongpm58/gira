@@ -28,6 +28,10 @@ public interface GennericService <T extends BaseEntity, D, ID>{
         return getRepository().findAll(page).stream().map(model -> getMapper().map(model, clazz)).toList();
     }
 
+    default  List<T> findByIds(List<ID> ids) {
+        return getRepository().findAllById(ids);
+    }
+
     default Optional<T> findById(ID id) {
         return getRepository().findById(id);
     }
@@ -35,6 +39,12 @@ public interface GennericService <T extends BaseEntity, D, ID>{
     default T save(T entity){
 
         return getRepository().save(entity);
+    }
+
+    default T save(D dto, Class<T> clazz) {
+        T model = getMapper().map(dto, clazz);
+        T savedModel = getRepository().save(model);
+        return savedModel;
     }
 
     default void deleteById(ID id) {

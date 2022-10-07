@@ -5,14 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.Hibernate;
 import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import javax.xml.stream.XMLInputFactory;
+import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -26,17 +26,44 @@ public class Role extends BaseEntity {
     @Length(min = 5, max = 100, message = "role name must have length between {min} and {max}")
     private String name;
     @Column(name = RoleEntity.Role.CODE)
-    @Length(min = 3, max = 10, message = "role name must have length between {min} and {max}")
+//    @Length(min = 3, max = 10, message = "role name  must have length between {min} and {max}")
     private String code;
     @Column(name = RoleEntity.Role.DESCRIPTION)
     @NotBlank
     private String desciption;
 
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = RoleEntity.RoleMappedOperation.JOIN_TABLE,
+            joinColumns = @JoinColumn(name = RoleEntity.RoleMappedOperation.JOIN_TABLE_ROLE_ID),
+            inverseJoinColumns = @JoinColumn(name = RoleEntity.RoleMappedOperation.JOIN_TABLE_OPERATION_ID)
+    )
+    private Set<Operation> operations = new LinkedHashSet<>();
+
+    public void removeOperation(Operation operation) {
+        operations.remove(operation);
+        operation.getRoles().remove(this);
+    }
+
+    public Role addOperation(Operation operation) {
+        this.operations.add(operation);
+        operation.getRoles().add(this);
+        return this;
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
     @Override
     public boolean equals(Object obj) {
-        Role role = (Role)obj;
-        return super.equals(obj)
-                && this.name.equals(role)
-                && this.code.equals(role);
+        if(this == obj) return true;
+        if(obj == null || Hibernate.getClass(this) != Hibernate.getClass(obj)){
+            return false;
+        }
+        Role role = (Role) obj;
+
+        return this.id != null && Objects.equals(this.id, role.id);
     }
 }
